@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b5795">
   <title>WMS Lite - Tra cứu vật tư</title>
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -51,12 +51,54 @@
       </div>
     </div>
 
-    <nav class="nav" aria-label="Chức năng chính">
-      <button data-mode="search" class="active">🔎 <span>Tra cứu</span></button>
-      <button data-mode="missing">⊗ <span>Chưa có vị trí</span><b id="navMissing"></b></button>
-      <button data-mode="multi">▱ <span>Nhiều vị trí</span><b id="navMulti"></b></button>
-      <button data-mode="rack">🏗 <span>Theo giá</span></button>
-    </nav>
+    
+    <button id="menuButton" class="menu-button" type="button" aria-label="Mở menu">☰</button>
+
+    <div id="drawerOverlay" class="drawer-overlay hidden"></div>
+    <aside id="sideDrawer" class="side-drawer hidden" aria-label="Menu chức năng">
+      <div class="drawer-head">
+        <div class="drawer-brand">
+          <span>🏭</span>
+          <div>
+            <b>WMS Lite</b>
+            <small>Tra cứu vật tư nội bộ</small>
+          </div>
+        </div>
+        <button id="closeDrawer" type="button" aria-label="Đóng menu">✕</button>
+      </div>
+
+      <div class="drawer-user">
+        <div>👤 <strong id="drawerAccountName">Nội bộ</strong></div>
+        <small id="drawerAccountRole">Tài khoản chỉ xem</small>
+      </div>
+
+      <nav class="drawer-nav">
+        <button data-mode="search" class="active">
+          <span class="drawer-icon">🔎</span>
+          <span>Tra cứu vật tư</span>
+        </button>
+        <button data-mode="rack">
+          <span class="drawer-icon">🏗</span>
+          <span>Theo giá</span>
+        </button>
+        <button data-mode="missing">
+          <span class="drawer-icon">⊗</span>
+          <span>Chưa có vị trí</span>
+          <b id="drawerMissing"></b>
+        </button>
+        <button data-mode="multi">
+          <span class="drawer-icon">▱</span>
+          <span>Nhiều vị trí</span>
+          <b id="drawerMulti"></b>
+        </button>
+      </nav>
+
+      <div class="drawer-footer">
+        <button id="drawerLogout" type="button">🚪 Đăng xuất</button>
+        <small>WMS Lite V8</small>
+      </div>
+    </aside>
+
 
 
     <div class="account-box">
@@ -75,6 +117,15 @@
 </header>
 
 <main class="page">
+
+<div class="module-bar">
+  <div>
+    <span id="moduleIcon">🔎</span>
+    <strong id="moduleTitle">Tra cứu vật tư</strong>
+  </div>
+  <small id="moduleSubtitle">Tìm theo mã hoặc tên vật tư</small>
+</div>
+
   <section id="viewSearch" class="view active">
     <div class="search-panel panel">
       <label class="search-label" for="q">Nhập mã vật tư hoặc tên vật tư cần tìm</label>
@@ -154,7 +205,7 @@
   </footer>
 </main>
 
-<script src="app.js?v=7" defer></script>
+<script src="app.js?v=8" defer></script>
 </div>
 </body>
 </html>

@@ -1,5 +1,36 @@
 "use strict";
 
+const MODULE_INFO = {
+  search: {icon:"🔎", title:"Tra cứu vật tư", subtitle:"Tìm theo mã hoặc tên vật tư"},
+  rack: {icon:"🏗", title:"Theo giá", subtitle:"Xem vật tư theo Kho → Giá → Tầng → Khoang"},
+  missing: {icon:"⊗", title:"Chưa có vị trí", subtitle:"Vật tư có tồn nhưng chưa được bố trí vị trí"},
+  multi: {icon:"▱", title:"Nhiều vị trí", subtitle:"Vật tư đang được lưu tại từ hai vị trí trở lên"}
+};
+
+function openDrawer(){
+  document.getElementById("sideDrawer").classList.remove("hidden");
+  document.getElementById("drawerOverlay").classList.remove("hidden");
+  requestAnimationFrame(()=>document.getElementById("sideDrawer").classList.add("open"));
+  document.body.classList.add("drawer-open");
+}
+
+function closeDrawer(){
+  const drawer=document.getElementById("sideDrawer");
+  drawer.classList.remove("open");
+  document.body.classList.remove("drawer-open");
+  setTimeout(()=>{
+    drawer.classList.add("hidden");
+    document.getElementById("drawerOverlay").classList.add("hidden");
+  },180);
+}
+
+function setModuleHeader(mode){
+  const info=MODULE_INFO[mode]||MODULE_INFO.search;
+  document.getElementById("moduleIcon").textContent=info.icon;
+  document.getElementById("moduleTitle").textContent=info.title;
+  document.getElementById("moduleSubtitle").textContent=info.subtitle;
+}
+
 const AUTH_USERS = {
   admin: {
     hash: "ad5d4a5abdaced8d0e6c7012fab90f1c857126e218e6e7e2da83b55e65e79a6d",
@@ -74,6 +105,11 @@ function showApp(username) {
   document.getElementById("accountName").textContent = user.displayName;
   document.getElementById("accountRole").textContent =
     user.role === "admin" ? "Tài khoản quản trị" : "Tài khoản chỉ xem";
+  const drawerName=document.getElementById("drawerAccountName");
+  const drawerRole=document.getElementById("drawerAccountRole");
+  if(drawerName) drawerName.textContent=user.displayName;
+  if(drawerRole) drawerRole.textContent=user.role==="admin"?"Tài khoản quản trị":"Tài khoản chỉ xem";
+
 }
 
 async function attemptLogin(username, password, remember) {
@@ -170,7 +206,10 @@ function switchView(mode){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
   const id=`view${mode[0].toUpperCase()+mode.slice(1)}`;
-  $(id).classList.add("active");
+  const target=document.getElementById(id);
+  if(target) target.classList.add("active");
+  setModuleHeader(mode);
+  closeDrawer();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
@@ -346,6 +385,14 @@ function bind(){
   $("multiFilter").addEventListener("input",()=>renderFiltered(multi,"multiFilter","contentMulti","multi"));
   $("warehouseSelect").onchange=updateRackOptions;
   $("rackSelect").onchange=renderRack;
+  document.getElementById("menuButton").onclick=openDrawer;
+  document.getElementById("closeDrawer").onclick=closeDrawer;
+  document.getElementById("drawerOverlay").onclick=closeDrawer;
+  document.getElementById("drawerLogout").onclick=()=>{
+    if(typeof clearSession==="function") clearSession();
+    location.reload();
+  };
+
 }
 
 async function load(){
@@ -362,6 +409,8 @@ async function load(){
     $("multiCount").textContent=multi.length;
     $("navMissing").textContent=missing.length;
     $("navMulti").textContent=multi.length;
+    $("drawerMissing").textContent=missing.length;
+    $("drawerMulti").textContent=multi.length;
 
     renderSearch([]);
     renderFiltered(missing,"missingFilter","contentMissing","missing");

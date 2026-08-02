@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07162b">
 <title>WMS Lite - Tra cứu vật tư</title>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <header class="topbar"><div class="top-inner"><div class="brand"><div class="logo">🏭</div><div><h1>WMS Lite</h1><small>Quản lý vật tư – Tra cứu vị trí</small><div class="data-status" id="dataStatus">Đang tải dữ liệu...</div></div></div><nav class="nav"><button data-mode="search" class="active">🔎 Tra cứu</button><button data-mode="missing">◷ Chưa có vị trí</button><button data-mode="multi">▱ Nhiều vị trí</button><button data-mode="rack">🏗 Theo giá</button></nav><div class="updated"><b>Dữ liệu cập nhật</b><br><span id="updated"></span></div></div></header>
@@ -13,6 +13,6 @@
 <div class="main-grid"><section class="panel left-panel"><div class="tabs"><button class="tab blue active" data-mode="search">🔎 KẾT QUẢ TRA CỨU <span id="searchCount"></span></button><button class="tab red" data-mode="missing">⊗ CHƯA CÓ VỊ TRÍ (<span id="missingCount">0</span>)</button><button class="tab orange" data-mode="multi">▱ NHIỀU VỊ TRÍ (<span id="multiCount">0</span>)</button></div><div id="content" class="content"><div class="loading">Đang tải dữ liệu...</div></div></section>
 <aside class="panel rack-panel"><div class="rack-title">🏗 THEO GIÁ</div><div class="rack-controls"><div><label>Chọn kho</label><select id="warehouseSelect"></select></div><div><label>Chọn giá</label><select id="rackSelect"></select></div></div><div id="rackSummary" class="rack-summary"></div><div id="groups" class="groups"></div></aside></div>
 <footer class="footer"><div class="foot"><b>ⓘ Hướng dẫn sử dụng</b>• Nhập mã hoặc tên vật tư để tra cứu<br>• Dùng các tab để xem danh sách tổng hợp<br>• Tab “Theo giá” để xem vật tư từng giá</div><div class="foot"><b>🛡 Dữ liệu</b>• Nguồn: dữ liệu nguồn hệ thống<br>• Cập nhật theo lần xuất từ Excel<br>• Tồn hệ thống lấy từ dữ liệu nguồn</div><div class="foot"><b>📱 Tương thích</b>• Máy tính, máy tính bảng và điện thoại<br>• Không cần cài đặt phần mềm<br>• Chỉ cần trình duyệt web</div></footer></main>
-<script src="app.js?v=3" defer></script>
+<script src="app.js?v=4" defer></script>
 </body>
 </html>

@@ -57,35 +57,62 @@ function locText(v) {
   return `📍 ${wh} • Giá ${esc(v.rack)} • Tầng ${esc(v.level)} • Khoang ${esc(v.compartment)}`;
 }
 
-function summaryCard(x) {
-  return `<div class="summary">
-    <div><div class="label">Mã vật tư</div><div class="value">${esc(x.code)}</div></div>
-    <div><div class="label">Tên vật tư</div><div class="value">${esc(x.name)}</div></div>
-    <div><div class="label">Đơn vị tính</div><div class="value">${esc(x.unit)}</div></div>
-    <div><div class="label">Tồn hệ thống</div><div class="value stock">${esc(x.stock)}</div></div>
-  </div>`;
-}
-
 function itemCard(x) {
-  const loc = x.locations.length
-    ? `<div class="section-head">Vị trí đang lưu (${x.locations.length})</div>
-       ${x.locations.map(v => `<div class="location-card ${x.locations.length > 1 ? "multi" : ""}">
-         <div class="loc-main">${locText(v)}</div><span class="badge">Đang có</span>
-       </div>`).join("")}`
-    : `<div class="location-card multi"><div class="loc-main">Chưa có vị trí</div></div>`;
+  const hasLocations = x.locations.length > 0;
+  const locationHtml = hasLocations
+    ? `<div class="card-locations">
+         <div class="card-location-title">Vị trí đang lưu (${x.locations.length})</div>
+         ${x.locations.map(v => `<div class="card-location-row ${x.locations.length > 1 ? "multi" : ""}">
+           <span class="location-text">${locText(v)}</span>
+           <span class="location-status">Đang có</span>
+         </div>`).join("")}
+       </div>`
+    : `<div class="card-warning">⚠ Chưa có vị trí</div>`;
 
-  return `<article>${summaryCard(x)}${loc}</article>`;
+  return `<article class="material-card-complete ${hasLocations ? "" : "missing-location"}">
+    <div class="material-info-grid">
+      <div class="info-cell">
+        <span>Mã vật tư</span>
+        <b class="material-code">${esc(x.code)}</b>
+      </div>
+      <div class="info-cell material-name-cell">
+        <span>Tên vật tư</span>
+        <b>${esc(x.name)}</b>
+      </div>
+      <div class="info-cell">
+        <span>Đơn vị tính</span>
+        <b>${esc(x.unit)}</b>
+      </div>
+      <div class="info-cell">
+        <span>Tồn hệ thống</span>
+        <b class="stock-value">${esc(x.stock)}</b>
+      </div>
+    </div>
+    ${locationHtml}
+  </article>`;
 }
 
 function smallCard(x) {
-  return `<div class="item-card">
-    <div class="item-top">
-      <div><div class="code">${esc(x.code)}</div><div class="name">${esc(x.name)}</div></div>
-      <b>${x.locations.length ? x.locations.length + " vị trí" : "Tồn: " + esc(x.stock)}</b>
+  const hasLocations = x.locations.length > 0;
+  return `<article class="material-card-complete compact-card ${hasLocations ? "" : "missing-location"}">
+    <div class="compact-header">
+      <div>
+        <b class="material-code">${esc(x.code)}</b>
+        <div class="compact-name">${esc(x.name)}</div>
+      </div>
+      <div class="compact-stock">
+        <span>Tồn</span>
+        <b>${esc(x.stock)} ${esc(x.unit)}</b>
+      </div>
     </div>
-    <div class="meta">ĐVT: ${esc(x.unit)} • Tồn hệ thống: ${esc(x.stock)}</div>
-    ${x.locations.map(v => `<div class="meta">${locText(v)}</div>`).join("")}
-  </div>`;
+    ${hasLocations
+      ? `<div class="card-locations compact-locations">
+          ${x.locations.map(v => `<div class="card-location-row ${x.locations.length > 1 ? "multi" : ""}">
+            <span class="location-text">${locText(v)}</span>
+          </div>`).join("")}
+        </div>`
+      : `<div class="card-warning">⚠ Chưa có vị trí</div>`}
+  </article>`;
 }
 
 function setActive(m) {

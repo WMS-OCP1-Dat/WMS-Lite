@@ -439,3 +439,158 @@ button{cursor:pointer}
   .group h3{font-size:13px}
   .group-count{font-size:10px}
 }
+
+
+/* V4 - Mỗi mã vật tư là một thẻ liền khối */
+.material-card-complete{
+  overflow:hidden;
+  margin-bottom:14px;
+  border:1px solid #a9d1ef;
+  border-radius:15px;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(31,61,88,.07);
+}
+.material-card-complete.missing-location{
+  border-color:#efc67f;
+}
+.material-info-grid{
+  display:grid;
+  grid-template-columns:1fr 1.7fr .72fr .78fr;
+  gap:12px;
+  padding:15px 16px;
+  background:#f1f8fd;
+}
+.info-cell span{
+  display:block;
+  margin-bottom:5px;
+  color:#708090;
+  font-size:12px;
+}
+.info-cell b{
+  display:block;
+  font-size:17px;
+  line-height:1.28;
+}
+.material-code{
+  color:#084f82;
+  font-weight:900;
+}
+.stock-value{
+  color:#138436;
+  font-size:19px!important;
+}
+.card-locations{
+  padding:0 14px 13px;
+  background:#fff;
+}
+.card-location-title{
+  padding:11px 1px 7px;
+  color:#075183;
+  font-size:15px;
+  font-weight:900;
+}
+.card-location-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:6px;
+  padding:11px 12px;
+  border:1px solid #bce2c5;
+  border-radius:10px;
+  background:#f1fbf4;
+}
+.card-location-row.multi{
+  border-color:#efcf97;
+  background:#fff9ee;
+}
+.location-text{
+  font-weight:800;
+  line-height:1.35;
+}
+.location-status{
+  flex:0 0 auto;
+  padding:4px 9px;
+  border-radius:999px;
+  background:#d9f3df;
+  color:#177734;
+  font-size:11px;
+}
+.card-warning{
+  margin:0;
+  padding:12px 15px;
+  border-top:1px solid #efc67f;
+  background:#fff8ec;
+  font-weight:850;
+  color:#5e471f;
+}
+.compact-card{
+  border-color:#d8e1e9;
+}
+.compact-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:15px;
+  padding:14px 15px;
+  background:#f7fafc;
+}
+.compact-name{
+  margin-top:4px;
+  font-size:16px;
+  font-weight:750;
+}
+.compact-stock{
+  flex:0 0 auto;
+  text-align:right;
+}
+.compact-stock span{
+  display:block;
+  margin-bottom:3px;
+  color:#718096;
+  font-size:11px;
+}
+.compact-stock b{
+  color:#138436;
+}
+.compact-locations{
+  padding-top:7px;
+}
+.compact-locations .card-location-row{
+  justify-content:flex-start;
+}
+@media(max-width:700px){
+  .material-info-grid{
+    grid-template-columns:1fr 1fr;
+    padding:13px;
+  }
+  .material-name-cell{
+    grid-column:1/-1;
+    grid-row:2;
+  }
+  .info-cell b{
+    font-size:16px;
+  }
+  .stock-value{
+    font-size:18px!important;
+  }
+}
+@media(max-width:430px){
+  .material-info-grid{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .card-location-row{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .location-status{
+    align-self:flex-start;
+  }
+  .compact-header{
+    flex-direction:column;
+  }
+  .compact-stock{
+    text-align:left;
+  }
+}

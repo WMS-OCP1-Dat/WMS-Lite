@@ -2,7 +2,7 @@
 
 const MODULE_INFO = {
   search: {icon:"🔎", title:"Tra cứu vật tư", subtitle:"Tìm theo mã hoặc tên vật tư"},
-  rack: {icon:"🏗", title:"Theo giá", subtitle:"Xem vật tư theo Kho → Giá → Tầng → Khoang"},
+  rack: {icon:"🏗", title:"Tìm theo giá, kệ", subtitle:"Xem vật tư theo Kho → Giá/Kệ → Tầng → Khoang"},
   missing: {icon:"⊗", title:"Chưa có vị trí", subtitle:"Vật tư có tồn nhưng chưa được bố trí vị trí"},
   multi: {icon:"▱", title:"Nhiều vị trí", subtitle:"Vật tư đang được lưu tại từ hai vị trí trở lên"}
 };
@@ -166,6 +166,7 @@ let DB = {updated:"",items:[],stats:{total:0,missing:0,multi:0}};
 const $ = id => document.getElementById(id);
 const norm = s => (s || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const setText = (id, value) => { const el=document.getElementById(id); if(el) el.textContent=value; };
 
 let missing=[], multi=[], lastResults=[];
 
@@ -216,23 +217,11 @@ function switchView(mode){
 function materialCard(x){
   const hasLocations=x.locations.length>0;
   return `<article class="material-card ${hasLocations?"":"missing-card"}">
-    <div class="material-info">
-      <div>
-        <span>Mã vật tư</span>
-        <b class="material-code">${esc(x.code)}</b>
-      </div>
-      <div class="material-name">
-        <span>Tên vật tư</span>
-        <b>${esc(x.name)}</b>
-      </div>
-      <div>
-        <span>Đơn vị tính</span>
-        <b>${esc(x.unit)}</b>
-      </div>
-      <div>
-        <span>Tồn hệ thống</span>
-        <b class="stock-value">${formatStock(x.stock)}</b>
-      </div>
+    <div class="material-info compact-material-info">
+      <div class="top-code"><span>Mã vật tư</span><b class="material-code">${esc(x.code)}</b></div>
+      <div class="top-unit"><span>Đơn vị tính</span><b>${esc(x.unit)}</b></div>
+      <div class="top-stock"><span>Tồn</span><b class="stock-value">${formatStock(x.stock)}</b></div>
+      <div class="material-name"><span>Tên vật tư</span><b>${esc(x.name)}</b></div>
     </div>
     ${hasLocations
       ? `<div class="locations-wrap">
@@ -403,14 +392,14 @@ async function load(){
     missing=DB.items.filter(x=>Number(x.stock)>0&&x.locations.length===0);
     multi=DB.items.filter(x=>x.locations.length>=2);
 
-    $("updated").textContent=DB.updated||"Không rõ";
-    $("dataStatus").textContent=`Đã tải ${DB.items.length} mã vật tư`;
-    $("missingCount").textContent=missing.length;
-    $("multiCount").textContent=multi.length;
-    $("navMissing").textContent=missing.length;
-    $("navMulti").textContent=multi.length;
-    $("drawerMissing").textContent=missing.length;
-    $("drawerMulti").textContent=multi.length;
+    setText("updated", DB.updated||"Không rõ");
+    setText("dataStatus", `Đã tải ${DB.items.length} mã vật tư`);
+    setText("missingCount", missing.length);
+    setText("multiCount", multi.length);
+    setText("navMissing", missing.length);
+    setText("navMulti", multi.length);
+    setText("drawerMissing", missing.length);
+    setText("drawerMulti", multi.length);
 
     renderSearch([]);
     renderFiltered(missing,"missingFilter","contentMissing","missing");

@@ -876,3 +876,211 @@ body.drawer-open{overflow:hidden}
   .module-bar small{text-align:left}
   .account-box>button span{display:none}
 }
+
+
+/* V8.1 - Đưa nút menu ra ngoài cùng bên trái */
+.top-inner{
+  flex-direction:row;
+  align-items:center;
+}
+.menu-button{
+  order:-10;
+  margin-right:2px;
+}
+.brand{
+  order:-9;
+}
+.account-box{
+  margin-left:auto;
+}
+@media(max-width:700px){
+  .top-inner{
+    flex-wrap:nowrap;
+  }
+  .menu-button{
+    width:43px;
+    height:43px;
+    font-size:23px;
+  }
+}
+
+
+/* V9 - Header cân giữa, thẻ mobile gọn và sửa bố cục */
+.top-inner{
+  display:grid!important;
+  grid-template-columns:52px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px!important;
+  max-width:1180px;
+}
+.menu-button{
+  grid-column:1;
+  margin:0!important;
+}
+.brand{
+  grid-column:2;
+  min-width:0!important;
+  display:flex!important;
+  justify-content:center;
+  text-align:center;
+}
+.brand-main{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.brand h1{font-size:27px}
+.brand small{font-size:13px}
+.brand-updated{
+  margin-top:5px;
+  color:#dceeff;
+  font-size:11px;
+  font-weight:650;
+}
+.data-status{
+  margin-top:2px;
+  font-size:11px;
+}
+.account-box{
+  grid-column:3;
+  margin-left:0!important;
+}
+.account-box>button{
+  min-width:48px;
+}
+.module-bar{
+  margin-bottom:12px;
+}
+.compact-material-info{
+  grid-template-columns:1fr .55fr .65fr;
+  grid-template-areas:
+    "code unit stock"
+    "name name name";
+  padding:13px 15px;
+  gap:9px 12px;
+}
+.compact-material-info .top-code{grid-area:code}
+.compact-material-info .top-unit{grid-area:unit}
+.compact-material-info .top-stock{grid-area:stock}
+.compact-material-info .material-name{grid-area:name}
+.compact-material-info .material-name b{font-size:18px}
+.compact-material-info span{
+  margin-bottom:3px;
+  font-size:12px;
+}
+.compact-material-info b{
+  font-size:17px;
+}
+.compact-material-info .stock-value{
+  font-size:18px!important;
+}
+.material-card{
+  margin-bottom:12px;
+}
+.locations-wrap{
+  padding:0 12px 11px;
+}
+.locations-title{
+  padding:9px 1px 5px;
+  font-size:15px;
+}
+.location-row{
+  margin-top:5px;
+  padding:9px 10px;
+}
+.warning-row{
+  padding:10px 13px;
+}
+.content{
+  padding:13px;
+}
+.search-panel{
+  padding:15px;
+  margin-bottom:13px;
+}
+.panel-title{
+  padding:13px 15px;
+}
+@media(max-width:700px){
+  .top-inner{
+    grid-template-columns:48px minmax(0,1fr) 48px;
+    padding:10px 12px!important;
+  }
+  .brand-main .logo{display:none}
+  .brand h1{
+    font-size:25px;
+    white-space:nowrap;
+  }
+  .brand small{
+    display:block!important;
+    font-size:11px;
+    white-space:nowrap;
+  }
+  .brand-updated{
+    font-size:10px;
+    white-space:nowrap;
+  }
+  .data-status{font-size:10px}
+  .account-box>button{
+    width:46px;
+    height:46px;
+    padding:0!important;
+    font-size:0!important;
+  }
+  .account-box>button::before{
+    content:"👤";
+    font-size:20px;
+  }
+  .account-box>button span{display:none!important}
+  .module-bar{
+    padding:10px 13px;
+    gap:2px;
+  }
+  .module-bar strong{font-size:17px}
+  .module-bar small{font-size:13px}
+  .search-row input,.list-search input{
+    padding:12px 14px;
+  }
+  .primary,.secondary{
+    min-height:46px;
+  }
+  .compact-material-info{
+    grid-template-columns:1fr .62fr .7fr!important;
+    grid-template-areas:
+      "code unit stock"
+      "name name name"!important;
+    padding:12px 13px!important;
+  }
+  .compact-material-info .material-name{
+    grid-column:auto!important;
+    grid-row:auto!important;
+  }
+  .compact-material-info .material-name b{
+    font-size:17px;
+  }
+  .location-row{
+    flex-direction:row!important;
+    align-items:center!important;
+  }
+  .location-row span{
+    align-self:auto!important;
+  }
+}
+@media(max-width:390px){
+  .brand h1{font-size:22px}
+  .brand small{font-size:10px}
+  .compact-material-info{
+    grid-template-columns:1fr .55fr!important;
+    grid-template-areas:
+      "code unit"
+      "name name"
+      "stock stock"!important;
+  }
+  .compact-material-info .top-stock{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .compact-material-info .top-stock span{margin:0}
+}

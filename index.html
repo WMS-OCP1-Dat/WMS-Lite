@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b5795">
   <title>WMS Lite - Tra cứu vật tư</title>
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
@@ -42,19 +42,19 @@
 
 <header class="topbar">
   <div class="top-inner">
-    <div class="brand">
-      <div class="logo">🏭</div>
-      <div>
-        <h1>WMS Lite</h1>
-        <small>Quản lý vật tư – Tra cứu vị trí</small>
-        <div class="data-status" id="dataStatus">Đang tải dữ liệu...</div>
-      </div>
-    </div>
-
-    
     <button id="menuButton" class="menu-button" type="button" aria-label="Mở menu">☰</button>
 
-    <div id="drawerOverlay" class="drawer-overlay hidden"></div>
+    <div class="brand">
+      <div class="brand-main">
+        <div class="logo">🏭</div>
+        <div>
+          <h1>WMS Lite</h1>
+          <small>Quản lý vật tư – Tra cứu vị trí</small>
+          <div class="brand-updated">Dữ liệu cập nhật: <span id="updated">--/--/----</span></div>
+          <div class="data-status" id="dataStatus">Đang tải dữ liệu...</div>
+        </div>
+      </div>
+    </div><div id="drawerOverlay" class="drawer-overlay hidden"></div>
     <aside id="sideDrawer" class="side-drawer hidden" aria-label="Menu chức năng">
       <div class="drawer-head">
         <div class="drawer-brand">
@@ -79,7 +79,7 @@
         </button>
         <button data-mode="rack">
           <span class="drawer-icon">🏗</span>
-          <span>Theo giá</span>
+          <span>Tìm theo giá, kệ</span>
         </button>
         <button data-mode="missing">
           <span class="drawer-icon">⊗</span>
@@ -107,11 +107,6 @@
         <div id="accountRole"></div>
         <button id="logoutButton" type="button">Đăng xuất</button>
       </div>
-    </div>
-
-    <div class="updated">
-      <b>Dữ liệu cập nhật</b>
-      <span id="updated">--/--/----</span>
     </div>
   </div>
 </header>
@@ -181,7 +176,7 @@
   <section id="viewRack" class="view">
     <section class="panel rack-panel">
       <div class="panel-title purple-title">
-        <span>🏗 TRA CỨU VẬT TƯ THEO GIÁ</span>
+        <span>🏗 TÌM VẬT TƯ THEO GIÁ, KỆ</span>
       </div>
       <div class="rack-controls">
         <div>
@@ -205,7 +200,7 @@
   </footer>
 </main>
 
-<script src="app.js?v=8" defer></script>
+<script src="app.js?v=9" defer></script>
 </div>
 </body>
 </html>

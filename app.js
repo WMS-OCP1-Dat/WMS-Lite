@@ -350,7 +350,7 @@ function bind(){
 
 async function load(){
   try{
-    const r=await fetch(`data.json?t=${Date.now()}`,{cache:"no-store"});
+    const r=await fetch(`wms_data_868810a6f2c1.json?t=${Date.now()}`,{cache:"no-store"});
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     DB=await r.json();
     missing=DB.items.filter(x=>Number(x.stock)>0&&x.locations.length===0);
@@ -370,7 +370,7 @@ async function load(){
   }catch(e){
     console.error(e);
     $("dataStatus").textContent="Không tải được dữ liệu";
-    $("contentSearch").innerHTML=`<div class="error">Không tải được data.json: ${esc(e.message)}</div>`;
+    $("contentSearch").innerHTML=`<div class="error">Không tải được dữ liệu hệ thống: ${esc(e.message)}</div>`;
   }
 }
 

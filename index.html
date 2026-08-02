@@ -5,9 +5,41 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b5795">
   <title>WMS Lite - Tra cứu vật tư</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🏭</div>
+    <h1>WMS Lite</h1>
+    <p>Hệ thống tra cứu vật tư nội bộ</p>
+
+    <form id="loginForm" autocomplete="on">
+      <label for="loginUser">Tên đăng nhập</label>
+      <input id="loginUser" name="username" autocomplete="username" required>
+
+      <label for="loginPassword">Mật khẩu</label>
+      <div class="password-wrap">
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+        <button type="button" id="togglePassword" aria-label="Hiện mật khẩu">👁</button>
+      </div>
+
+      <label class="remember-row">
+        <input type="checkbox" id="rememberLogin">
+        Ghi nhớ đăng nhập trong 7 ngày
+      </label>
+
+      <button class="login-button" type="submit">ĐĂNG NHẬP</button>
+      <div id="loginError" class="login-error" role="alert"></div>
+    </form>
+
+    <small>Chỉ dành cho người dùng nội bộ được cấp tài khoản.</small>
+  </div>
+</div>
+
+<div id="appShell" class="app-shell hidden">
+
 <header class="topbar">
   <div class="top-inner">
     <div class="brand">
@@ -25,6 +57,15 @@
       <button data-mode="multi">▱ <span>Nhiều vị trí</span><b id="navMulti"></b></button>
       <button data-mode="rack">🏗 <span>Theo giá</span></button>
     </nav>
+
+
+    <div class="account-box">
+      <button id="accountButton" type="button">👤 <span id="accountName">Nội bộ</span> ▾</button>
+      <div id="accountMenu" class="account-menu hidden">
+        <div id="accountRole"></div>
+        <button id="logoutButton" type="button">Đăng xuất</button>
+      </div>
+    </div>
 
     <div class="updated">
       <b>Dữ liệu cập nhật</b>
@@ -113,6 +154,7 @@
   </footer>
 </main>
 
-<script src="app.js?v=5" defer></script>
+<script src="app.js?v=6" defer></script>
+</div>
 </body>
 </html>

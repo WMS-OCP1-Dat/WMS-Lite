@@ -1,5 +1,131 @@
 "use strict";
 
+const AUTH_USERS = {
+  admin: {
+    hash: "ad5d4a5abdaced8d0e6c7012fab90f1c857126e218e6e7e2da83b55e65e79a6d",
+    displayName: "Quản trị",
+    role: "admin"
+  },
+  noibo: {
+    hash: "2ca3b3aaf39fecb27e79928f6b90f8ba472a68cf7cb3b36192c43afc9e46def4",
+    displayName: "Nội bộ",
+    role: "viewer"
+  }
+};
+const AUTH_KEY = "wms_lite_session_v1";
+const AUTH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+let currentUser = null;
+
+async function sha256(text) {
+  const data = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function saveSession(username, remember) {
+  const session = {
+    username,
+    expiresAt: remember ? Date.now() + AUTH_TTL_MS : 0
+  };
+  if (remember) {
+    localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+    sessionStorage.removeItem(AUTH_KEY);
+  } else {
+    sessionStorage.setItem(AUTH_KEY, JSON.stringify(session));
+    localStorage.removeItem(AUTH_KEY);
+  }
+}
+
+function readSession() {
+  const raw = sessionStorage.getItem(AUTH_KEY) || localStorage.getItem(AUTH_KEY);
+  if (!raw) return null;
+  try {
+    const session = JSON.parse(raw);
+    if (!AUTH_USERS[session.username]) return null;
+    if (session.expiresAt && Date.now() > session.expiresAt) {
+      localStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(AUTH_KEY);
+      return null;
+    }
+    return session.username;
+  } catch {
+    return null;
+  }
+}
+
+function clearSession() {
+  localStorage.removeItem(AUTH_KEY);
+  sessionStorage.removeItem(AUTH_KEY);
+}
+
+function showLogin() {
+  currentUser = null;
+  document.getElementById("appShell").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
+  document.getElementById("loginPassword").value = "";
+  document.getElementById("loginError").textContent = "";
+}
+
+function showApp(username) {
+  currentUser = username;
+  const user = AUTH_USERS[username];
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("appShell").classList.remove("hidden");
+  document.getElementById("accountName").textContent = user.displayName;
+  document.getElementById("accountRole").textContent =
+    user.role === "admin" ? "Tài khoản quản trị" : "Tài khoản chỉ xem";
+}
+
+async function attemptLogin(username, password, remember) {
+  const key = username.trim().toLowerCase();
+  const user = AUTH_USERS[key];
+  if (!user) return false;
+  const passwordHash = await sha256(password);
+  if (passwordHash !== user.hash) return false;
+  saveSession(key, remember);
+  showApp(key);
+  await startWmsApp();
+  return true;
+}
+
+function bindAuthEvents() {
+  const form = document.getElementById("loginForm");
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    const user = document.getElementById("loginUser").value;
+    const password = document.getElementById("loginPassword").value;
+    const remember = document.getElementById("rememberLogin").checked;
+    const error = document.getElementById("loginError");
+    error.textContent = "Đang kiểm tra...";
+
+    const ok = await attemptLogin(user, password, remember);
+    if (!ok) {
+      error.textContent = "Tên đăng nhập hoặc mật khẩu không đúng.";
+    }
+  });
+
+  document.getElementById("togglePassword").addEventListener("click", () => {
+    const input = document.getElementById("loginPassword");
+    input.type = input.type === "password" ? "text" : "password";
+  });
+
+  document.getElementById("accountButton").addEventListener("click", () => {
+    document.getElementById("accountMenu").classList.toggle("hidden");
+  });
+
+  document.getElementById("logoutButton").addEventListener("click", () => {
+    clearSession();
+    location.reload();
+  });
+
+  document.addEventListener("click", event => {
+    const box = document.querySelector(".account-box");
+    if (box && !box.contains(event.target)) {
+      document.getElementById("accountMenu").classList.add("hidden");
+    }
+  });
+}
+
 let DB = {updated:"",items:[],stats:{total:0,missing:0,multi:0}};
 const $ = id => document.getElementById(id);
 const norm = s => (s || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
@@ -247,5 +373,22 @@ async function load(){
     $("contentSearch").innerHTML=`<div class="error">Không tải được data.json: ${esc(e.message)}</div>`;
   }
 }
-bind();
-load();
+
+let wmsStarted = false;
+async function startWmsApp() {
+  if (wmsStarted) return;
+  wmsStarted = true;
+  bind();
+  await load();
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  bindAuthEvents();
+  const savedUser = readSession();
+  if (savedUser) {
+    showApp(savedUser);
+    await startWmsApp();
+  } else {
+    showLogin();
+  }
+});

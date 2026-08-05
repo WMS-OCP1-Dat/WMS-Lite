@@ -386,7 +386,7 @@ function bind(){
 
 async function load(){
   try{
-    const r=await fetch(`wms_data_20260805_142300_50241e7ae69a96d7.json?t=${Date.now()}`,{cache:"no-store"});
+    const r=await fetch(`wms_data_868810a6f2c1.json?t=${Date.now()}`,{cache:"no-store"});
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     DB=await r.json();
     missing=DB.items.filter(x=>Number(x.stock)>0&&x.locations.length===0);

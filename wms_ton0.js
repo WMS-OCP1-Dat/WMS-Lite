@@ -4,8 +4,8 @@
   const DATA_URL = "wms_data_868810a6f2c1.json";
   const IDS = {
     style: "wms-ton0-style",
-    button: "wms-ton0-button",
-    badge: "wms-ton0-badge",
+    menuItem: "wms-ton0-menu-item",
+    menuCount: "wms-ton0-menu-count",
     overlay: "wms-ton0-overlay",
     panel: "wms-ton0-panel",
     search: "wms-ton0-search",
@@ -18,40 +18,44 @@
   let loading = false;
 
   const txt = {
-    button: "T\u1ed2N 0 C\u00d3 V\u1eca TR\u00cd",
-    title: "T\u1ed3n 0 nh\u01b0ng v\u1eabn c\u00f3 v\u1ecb tr\u00ed",
-    search: "T\u00ecm theo m\u00e3, t\u00ean ho\u1eb7c v\u1ecb tr\u00ed...",
-    loading: "\u0110ang t\u1ea3i d\u1eef li\u1ec7u...",
-    empty: "Kh\u00f4ng c\u00f3 v\u1eadt t\u01b0 n\u00e0o th\u1ecfa \u0111i\u1ec1u ki\u1ec7n.",
-    noMatch: "Kh\u00f4ng t\u00ecm th\u1ea5y k\u1ebft qu\u1ea3 ph\u00f9 h\u1ee3p.",
-    error: "Kh\u00f4ng t\u1ea3i \u0111\u01b0\u1ee3c d\u1eef li\u1ec7u WMS.",
-    unit: "\u0110VT",
-    stock: "T\u1ed3n",
-    locations: "v\u1ecb tr\u00ed",
-    updated: "D\u1eef li\u1ec7u",
-    close: "\u0110\u00f3ng"
+    menu: "Tồn 0 có vị trí",
+    title: "Tồn 0 nhưng vẫn có vị trí",
+    search: "Tìm theo mã, tên hoặc vị trí...",
+    loading: "Đang tải dữ liệu...",
+    empty: "Không có vật tư nào thỏa điều kiện.",
+    noMatch: "Không tìm thấy kết quả phù hợp.",
+    error: "Không tải được dữ liệu WMS.",
+    unit: "ĐVT",
+    stock: "Tồn",
+    locations: "vị trí",
+    updated: "Dữ liệu",
+    close: "Đóng"
   };
 
+  function norm(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+  }
+
   function injectStyle() {
-    if (document.getElementById(IDS.style)) return;
+    const old = document.getElementById(IDS.style);
+    if (old) old.remove();
 
     const style = document.createElement("style");
     style.id = IDS.style;
     style.textContent = `
-      #${IDS.button}{
-        position:fixed;right:16px;bottom:16px;z-index:2147483000;
-        border:0;border-radius:999px;padding:11px 15px;
-        background:#b42318;color:#fff;font:700 13px/1.2 Arial,sans-serif;
-        box-shadow:0 5px 18px rgba(0,0,0,.24);cursor:pointer;
-        display:flex;align-items:center;gap:8px
-      }
-      #${IDS.badge}{
-        min-width:22px;height:22px;padding:0 6px;border-radius:11px;
-        background:#fff;color:#b42318;display:inline-flex;
-        align-items:center;justify-content:center;font-size:12px
+      .wms-ton0-menu-icon{
+        width:26px;height:26px;border:2px solid currentColor;border-radius:50%;
+        display:inline-flex;align-items:center;justify-content:center;
+        box-sizing:border-box;font:800 14px/1 Arial,sans-serif;
+        flex:0 0 26px
       }
       #${IDS.overlay}{
-        position:fixed;inset:0;z-index:2147483001;background:rgba(0,0,0,.45);
+        position:fixed;inset:0;z-index:2147483640;background:rgba(0,0,0,.45);
         display:none;align-items:flex-end;justify-content:center
       }
       #${IDS.overlay}.open{display:flex}
@@ -76,7 +80,9 @@
         width:100%;box-sizing:border-box;margin-top:10px;padding:11px 12px;
         border:1px solid #d0d5dd;border-radius:10px;font-size:15px;outline:none
       }
-      #${IDS.list}{padding:10px 12px 18px;overflow:auto;max-height:calc(92vh - 130px)}
+      #${IDS.list}{
+        padding:10px 12px 18px;overflow:auto;max-height:calc(92vh - 130px)
+      }
       .wms-ton0-card{
         background:#fff;border:1px solid #eaecf0;border-radius:12px;
         padding:11px 12px;margin-bottom:9px
@@ -96,7 +102,6 @@
         #${IDS.list}{max-height:calc(88vh - 130px)}
       }
       @media (max-width:480px){
-        #${IDS.button}{right:10px;bottom:10px;padding:10px 12px;font-size:12px}
         .wms-ton0-title{font-size:16px}
       }
     `;
@@ -123,6 +128,15 @@
     return wh;
   }
 
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
   function itemSearchText(item) {
     const locText = (item.locations || []).map(formatLocation).join(" ");
     return `${item.code || ""} ${item.name || ""} ${locText}`.toLocaleLowerCase("vi");
@@ -136,7 +150,8 @@
     const q = String(query || "").trim().toLocaleLowerCase("vi");
     const rows = q ? reportItems.filter(x => itemSearchText(x).includes(q)) : reportItems;
 
-    summary.textContent = `${rows.length}/${reportItems.length} m\u00e3 - ${txt.updated}: ${window.__wmsTon0Updated || "-"}`;
+    summary.textContent =
+      `${rows.length}/${reportItems.length} mã - ${txt.updated}: ${window.__wmsTon0Updated || "-"}`;
 
     if (!rows.length) {
       list.innerHTML = `<div class="wms-ton0-msg">${q ? txt.noMatch : txt.empty}</div>`;
@@ -167,13 +182,9 @@
     }).join("");
   }
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+  function updateMenuCount() {
+    const count = document.getElementById(IDS.menuCount);
+    if (count) count.textContent = loaded ? String(reportItems.length) : "...";
   }
 
   async function loadData(force = false) {
@@ -181,12 +192,9 @@
     if (loaded && !force) return;
 
     loading = true;
-    const badge = document.getElementById(IDS.badge);
-    const list = document.getElementById(IDS.list);
+    updateMenuCount();
 
     try {
-      if (list && !loaded) list.innerHTML = `<div class="wms-ton0-msg">${txt.loading}</div>`;
-
       const res = await fetch(`${DATA_URL}?v=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -207,30 +215,27 @@
       }
 
       reportItems = Array.from(dedupe.values()).sort((a, b) =>
-        String(a?.name || "").localeCompare(String(b?.name || ""), "vi", { sensitivity: "base" })
+        String(a?.name || "").localeCompare(
+          String(b?.name || ""), "vi", { sensitivity: "base" }
+        )
       );
 
       loaded = true;
-      if (badge) badge.textContent = String(reportItems.length);
+      updateMenuCount();
       render(document.getElementById(IDS.search)?.value || "");
     } catch (err) {
       console.error("WMS TON0 report:", err);
-      if (badge) badge.textContent = "!";
+      const count = document.getElementById(IDS.menuCount);
+      if (count) count.textContent = "!";
+      const list = document.getElementById(IDS.list);
       if (list) list.innerHTML = `<div class="wms-ton0-msg">${txt.error}</div>`;
     } finally {
       loading = false;
     }
   }
 
-  function createUi() {
-    if (document.getElementById(IDS.button)) return;
-
-    injectStyle();
-
-    const button = document.createElement("button");
-    button.id = IDS.button;
-    button.type = "button";
-    button.innerHTML = `<span>${txt.button}</span><span id="${IDS.badge}">...</span>`;
+  function createReportUi() {
+    if (document.getElementById(IDS.overlay)) return;
 
     const overlay = document.createElement("div");
     overlay.id = IDS.overlay;
@@ -242,20 +247,16 @@
             <button class="wms-ton0-close" type="button">${txt.close}</button>
           </div>
           <div id="${IDS.summary}">-</div>
-          <input id="${IDS.search}" type="search" autocomplete="off" placeholder="${txt.search}">
+          <input id="${IDS.search}" type="search" autocomplete="off"
+                 placeholder="${txt.search}">
         </div>
-        <div id="${IDS.list}"><div class="wms-ton0-msg">${txt.loading}</div></div>
+        <div id="${IDS.list}">
+          <div class="wms-ton0-msg">${txt.loading}</div>
+        </div>
       </section>
     `;
 
-    document.body.appendChild(button);
     document.body.appendChild(overlay);
-
-    button.addEventListener("click", () => {
-      overlay.classList.add("open");
-      loadData(false);
-      setTimeout(() => document.getElementById(IDS.search)?.focus(), 50);
-    });
 
     overlay.querySelector(".wms-ton0-close").addEventListener("click", () => {
       overlay.classList.remove("open");
@@ -268,17 +269,169 @@
     document.getElementById(IDS.search).addEventListener("input", e => {
       render(e.target.value);
     });
+  }
 
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") overlay.classList.remove("open");
+  function openReport(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    createReportUi();
+    const overlay = document.getElementById(IDS.overlay);
+    overlay.classList.add("open");
+    loadData(false);
+
+    setTimeout(() => {
+      document.getElementById(IDS.search)?.focus();
+    }, 60);
+  }
+
+  function isLikelyMenuRow(el) {
+    if (!el || el === document.body) return false;
+
+    const r = el.getBoundingClientRect();
+    if (r.width < 180 || r.height < 32 || r.height > 110) return false;
+
+    const t = norm(el.textContent);
+    if (!t.includes("nhieu vi tri")) return false;
+
+    return true;
+  }
+
+  function findExistingMenuRow() {
+    const all = document.querySelectorAll("span,div,p,a,button");
+
+    for (const el of all) {
+      const own = norm(el.textContent);
+
+      if (own === "nhieu vi tri" || own.startsWith("nhieu vi tri ")) {
+        let row = el.closest("a,button,[role='button'],li");
+
+        if (row && isLikelyMenuRow(row)) return row;
+
+        let p = el;
+        for (let i = 0; i < 5 && p; i++, p = p.parentElement) {
+          if (isLikelyMenuRow(p)) return p;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function replaceLeafText(root, oldText, newText) {
+    const nodes = root.querySelectorAll("*");
+
+    for (const el of nodes) {
+      if (el.children.length === 0 && norm(el.textContent) === norm(oldText)) {
+        el.textContent = newText;
+        return el;
+      }
+    }
+
+    return null;
+  }
+
+  function replaceCount(root) {
+    const leaves = root.querySelectorAll("*");
+
+    for (const el of leaves) {
+      if (el.children.length === 0 && /^\s*\d+\s*$/.test(el.textContent || "")) {
+        el.id = IDS.menuCount;
+        el.textContent = loaded ? String(reportItems.length) : "...";
+        return el;
+      }
+    }
+
+    const count = document.createElement("span");
+    count.id = IDS.menuCount;
+    count.textContent = loaded ? String(reportItems.length) : "...";
+    count.style.marginLeft = "auto";
+    count.style.fontWeight = "800";
+    root.appendChild(count);
+    return count;
+  }
+
+  function replaceIcon(root) {
+    const svg = root.querySelector("svg");
+
+    if (svg) {
+      const holder = document.createElement("span");
+      holder.className = "wms-ton0-menu-icon";
+      holder.textContent = "0";
+      svg.replaceWith(holder);
+      return;
+    }
+
+    const img = root.querySelector("img");
+    if (img) {
+      const holder = document.createElement("span");
+      holder.className = "wms-ton0-menu-icon";
+      holder.textContent = "0";
+      img.replaceWith(holder);
+    }
+  }
+
+  function mountMenuItem() {
+    if (document.getElementById(IDS.menuItem)) {
+      updateMenuCount();
+      return true;
+    }
+
+    const source = findExistingMenuRow();
+    if (!source || !source.parentElement) return false;
+
+    const item = source.cloneNode(true);
+    item.id = IDS.menuItem;
+    item.removeAttribute("onclick");
+    item.removeAttribute("href");
+
+    replaceLeafText(item, "Nhiều vị trí", txt.menu);
+    replaceCount(item);
+    replaceIcon(item);
+
+    item.style.cursor = "pointer";
+    item.addEventListener("click", openReport, true);
+
+    source.insertAdjacentElement("afterend", item);
+    updateMenuCount();
+
+    return true;
+  }
+
+  function removeOldFloatingButton() {
+    document.getElementById("wms-ton0-button")?.remove();
+  }
+
+  function boot() {
+    removeOldFloatingButton();
+    injectStyle();
+    createReportUi();
+
+    mountMenuItem();
+    loadData(false);
+
+    const observer = new MutationObserver(() => {
+      removeOldFloatingButton();
+      mountMenuItem();
     });
 
-    loadData(false);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        document.getElementById(IDS.overlay)?.classList.remove("open");
+      }
+    });
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", createUi, { once: true });
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {
-    createUi();
+    boot();
   }
 })();

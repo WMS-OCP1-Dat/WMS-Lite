@@ -184,7 +184,15 @@
 
   function updateMenuCount() {
     const count = document.getElementById(IDS.menuCount);
-    if (count) count.textContent = loaded ? String(reportItems.length) : "...";
+    if (!count) return;
+
+    const nextValue = loaded ? String(reportItems.length) : "...";
+
+    // Chi ghi DOM khi gia tri THUC SU thay doi.
+    // Tranh tu kich hoat MutationObserver vo han.
+    if (count.textContent !== nextValue) {
+      count.textContent = nextValue;
+    }
   }
 
   async function loadData(force = false) {
@@ -375,7 +383,6 @@
 
   function mountMenuItem() {
     if (document.getElementById(IDS.menuItem)) {
-      updateMenuCount();
       return true;
     }
 
@@ -412,9 +419,23 @@
     mountMenuItem();
     loadData(false);
 
+    let mountScheduled = false;
+
     const observer = new MutationObserver(() => {
-      removeOldFloatingButton();
-      mountMenuItem();
+      // Neu menu item van con thi TUYET DOI khong sua DOM.
+      // Chi can mount lai khi app render lai menu va lam mat item.
+      if (document.getElementById(IDS.menuItem)) return;
+      if (mountScheduled) return;
+
+      mountScheduled = true;
+
+      requestAnimationFrame(() => {
+        mountScheduled = false;
+
+        if (!document.getElementById(IDS.menuItem)) {
+          mountMenuItem();
+        }
+      });
     });
 
     observer.observe(document.body, {
